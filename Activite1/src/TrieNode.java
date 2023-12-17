@@ -1,12 +1,30 @@
 import java.util.HashMap;
 import java.util.Map;
 
-class TrieNode {
+public class TrieNode {
     Map<Character, TrieNode> children;
-    int id;  // L'identifiant associé au terme composé
+    int id;
 
     public TrieNode() {
         this.children = new HashMap<>();
-        this.id = -1;  // Initialise l'identifiant à -1 par défaut
+        this.id = -1;
     }
+
+    public Map<Character, TrieNode> getChildren() {
+        return children;
+    }
+
+    public void setChildren(Map<Character, TrieNode> children) {
+        this.children = children;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    
 }

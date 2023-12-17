@@ -1,16 +1,18 @@
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 public class Main {
-    private static final int CHUNK_SIZE = 1000;  // Taille de chaque partie à traiter
+    private static final int CHUNK_SIZE = 1000; // Taille de chaque partie à traiter
 
     public static void main(String[] args) {
         // Exemple d'utilisation et tests
         TermTrie termTrie = new TermTrie();
 
-        long startTime = System.currentTimeMillis();  // Mesurer le temps de début
+        long startTime = System.currentTimeMillis(); // Mesurer le temps de début
 
         // Charger les termes composés depuis le fichier F
         try {
@@ -27,33 +29,38 @@ public class Main {
                 processFile(reader, termTrie);
             }
 
-            System.out.println(termTrie.toString());
+            // System.out.println(termTrie.toString());
+            System.out.println("Fin parsing");
+
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        long endTime = System.currentTimeMillis();  // Mesurer le temps de fin
+        long endTime = System.currentTimeMillis(); // Mesurer le temps de fin
         long elapsedTime = endTime - startTime;
         System.out.println("Temps total du parsing : " + TimeUnit.MILLISECONDS.toSeconds(elapsedTime) + " secondes");
 
         System.out.println("Fin parsing.\nDébut de la recherche\n");
 
         // Test 1 : Vérifier si un terme est un mot composé et obtenir son identifiant
-        long searchStartTime = System.currentTimeMillis();  // Mesurer le temps de début de la recherche
-        int id1 = termTrie.isCompoundWord("avant toute chose");
-        System.out.println("ID 1 : " + id1);  // Afficher l'identifiant du terme composé
-        long searchEndTime = System.currentTimeMillis();  // Mesurer le temps de fin de la recherche
+        long searchStartTime = System.currentTimeMillis(); // Mesurer le temps de début de la recherche
+        int id1 = termTrie.isCompoundWord("marabout d'Afrique");
+        System.out.println("ID 1 : " + id1); // Afficher l'identifiant du terme composé
+        long searchEndTime = System.currentTimeMillis(); // Mesurer le temps de fin de la recherche
         long searchElapsedTime = searchEndTime - searchStartTime;
-        System.out.println("Temps de recherche pour 'avant toute chose' : " + TimeUnit.MILLISECONDS.toMillis(searchElapsedTime) + " millisecondes");
+        System.out.println("Temps de recherche pour 'marabout d'Afrique' : "
+                + TimeUnit.MILLISECONDS.toMillis(searchElapsedTime) + " millisecondes");
 
         // Test 2 : Rechercher des termes composés avec un préfixe donné
-        long prefixSearchStartTime = System.currentTimeMillis();  // Mesurer le temps de début de la recherche par préfixe
-        List<Pair<String, Integer>> results = termTrie.searchByPrefix("la");
-        long prefixSearchEndTime = System.currentTimeMillis();  // Mesurer le temps de fin de la recherche par préfixe
+        long prefixSearchStartTime = System.currentTimeMillis(); // Mesurer le temps de début de la recherche par
+                                                                 // préfixe
+        List<Pair<String, Integer>> results = termTrie.searchByPrefix("transfusion");
+        long prefixSearchEndTime = System.currentTimeMillis(); // Mesurer le temps de fin de la recherche par préfixe
         long prefixSearchElapsedTime = prefixSearchEndTime - prefixSearchStartTime;
-        System.out.println("Temps de recherche par préfixe pour 'la' : " + TimeUnit.MILLISECONDS.toMillis(prefixSearchElapsedTime) + " millisecondes");
-
-        System.out.println("Résultats : " + results);  // Afficher la liste des termes composés avec le préfixe "sir"
+        System.out.println("Temps de recherche par préfixe pour 'transfusion' : "
+                + TimeUnit.MILLISECONDS.toMillis(prefixSearchElapsedTime) + " millisecondes");
+        System.out.println("Nombre de préfixes pour 'transfusion' : " + results.size());
+        System.out.println("Résultats : " + results); // Afficher la liste des termes composés avec le préfixe "sir"
 
         // Afficher l'utilisation de la mémoire
         long totalMemory = Runtime.getRuntime().totalMemory();
@@ -70,15 +77,16 @@ public class Main {
 
         while ((line = reader.readLine()) != null) {
             processLine(line, termTrie);
-
             lineCount++;
 
             if (lineCount % CHUNK_SIZE == 0) {
-                termTrie = new TermTrie();  // Libérer la mémoire en créant un nouveau Trie
+
+                float state = (float) ((double) lineCount / 3275167) * 100;
+                System.out.println("Processed: " + state + "%");
             }
         }
-
-        System.out.println("Processed " + lineCount + " lines in total");
+        // System.out.println(termTrie.toString());
+        // System.out.println(termTrie.getRoot().getChildren().size());
     }
 
     private static void processLine(String line, TermTrie termTrie) {
@@ -92,7 +100,8 @@ public class Main {
             return;
         }
 
-        // Supposer que chaque ligne contient un terme composé et un identifiant séparés par des points-virgules
+        // Supposer que chaque ligne contient un terme composé et un identifiant séparés
+        // par des points-virgules
         String[] parts = line.split(";", 3);
         if (parts.length == 3) {
             // Supprimer les guillemets autour du terme
